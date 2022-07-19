@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
