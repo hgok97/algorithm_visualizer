@@ -3,15 +3,18 @@ import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import logic.AnimationSort;
 import logic.BubbleSort;
+import org.w3c.dom.css.Rect;
 
 import java.util.Random;
 
@@ -57,9 +60,135 @@ public class Start extends Application {
 
 
 
-        Button sortBtn = new Button("Sort");
+        Button colorFadeBtn = new Button("colorFade");
 
-        root.getChildren().add(sortBtn);
+
+        colorFadeBtn.setOnAction(event -> {
+
+            SequentialTransition sqt = new SequentialTransition();
+
+            for (int i = 0; i < nodes.length; i++) {
+
+                // SequentialTransistion "füllen"
+                FillTransition ft = new FillTransition();
+                ft.setFromValue(Color.YELLOW);
+                ft.setToValue(Color.AQUAMARINE);
+                ft.setDuration(Duration.millis(500));
+                ft.setShape((Rectangle)nodes[i]);
+                sqt.getChildren().add(ft);
+
+
+            }
+            sqt.play();
+
+
+        });
+
+        Text debugOutputText = new Text("Debug Output");
+
+
+
+        Button swapNodesBtn = new Button("swap random nodes");
+
+        swapNodesBtn.setOnAction(event -> {
+
+            Random rng = new Random();
+            int upperBound = nodes.length - 1;
+
+            // choose 2 random points, they should not be equal!
+            boolean found = true;
+            int i = rng.nextInt(upperBound);
+            int j;
+            // check if the next random value isnt equal, can be refactored obv.
+            do {
+                j = rng.nextInt(upperBound);
+                if (!(i == j)) {
+                    found = false;
+                }
+            } while (found);
+
+
+            Rectangle rec1 = (Rectangle)nodes[i];
+            Rectangle rec2 = (Rectangle)nodes[j];
+
+            // move rec1 to rec2 and rec2 to the position of rec1
+
+            // only need 1 time, cause it is the same for every node (they are aligned on Y-Axis)
+            double y = rec1.getY();
+
+            // Ist LayoutX nun der korrekte x-wert? Wir benötigen die x-Koordinaten des Nodes in der globalen Scene
+            double rec1_x = rec1.getLayoutX();
+            double rec2_x = rec2.getLayoutX();
+
+
+            debugOutputText.setText(rec1_x + ", " + rec2_x);
+            int speed = 500;
+
+
+            // 1. color rec1 to visualize that is "choosen"
+            FillTransition ft = new FillTransition();
+            ft.setDuration(Duration.millis(speed));
+            ft.setFromValue(Color.YELLOW);
+            ft.setToValue(Color.RED);
+            ft.setShape(rec1);
+
+            // 2. Color rec2
+
+            FillTransition ft2 = new FillTransition();
+            ft2.setDuration(Duration.millis(speed));
+            ft2.setFromValue(Color.YELLOW);
+            ft2.setToValue(Color.RED);
+            ft2.setShape(rec2);
+
+
+            ParallelTransition pt = new ParallelTransition(ft, ft2);
+
+
+
+            // Abhaengig davon ob rec1 kleiner oder größer ist wird die Verschiebung gemacht
+
+            double translateRec1X = 0;
+            double translateRec2X = 0;
+
+            // bewege rec1 richtung rec2 (positiv)
+            double distanceX = Math.abs(rec1_x - rec2_x);
+            if (rec1_x < rec2_x) {
+                translateRec1X = distanceX;
+                translateRec2X = -1 * distanceX;
+            } else {
+                translateRec1X = -1 * distanceX;
+                translateRec2X = distanceX;
+            }
+
+            TranslateTransition tt = new TranslateTransition();
+            tt.setByX(translateRec1X);
+            tt.setNode(rec1);
+            tt.setDuration(Duration.millis(speed));
+
+            TranslateTransition tt2 = new TranslateTransition();
+            tt2.setByX(translateRec2X);
+            tt2.setNode(rec2);
+            tt2.setDuration(Duration.millis(speed));
+
+            ParallelTransition pt2 = new ParallelTransition(tt, tt2);
+
+
+            SequentialTransition sqt = new SequentialTransition(pt, pt2);
+
+            sqt.play();
+
+
+        });
+
+        HBox buttonBox = new HBox(10);
+        buttonBox.getChildren().addAll(colorFadeBtn, swapNodesBtn, debugOutputText);
+
+
+        root.getChildren().add(buttonBox);
+
+        root.setOnMouseClicked(event -> {
+            debugOutputText.setText("x = " + event.getX() + ", " + "y = " + event.getY());
+        });
 
 
 
@@ -78,6 +207,19 @@ public class Start extends Application {
     }
 
 
+    /**
+     * kp warum kein terminal output da ist, man könnte auch in eine datei schreiben oder eine extra window parallel
+     * bzw. in ein scrollable text reinschreiben ^^
+     * @param nodes
+     */
+    private void printNodePosition(Node[] nodes) {
+
+        for (Node node: nodes) {
+            System.out.println(node.getLayoutX() + ", " + node.getTranslateX() + ", " + node.getLocalToSceneTransform());
+        }
+
+
+    }
 
     private Node[] createRandomNodes(int num_of_nodes, int max_height_of_node) {
 
@@ -96,25 +238,13 @@ public class Start extends Application {
             Rectangle rec1 = new Rectangle((SCENE_WIDTH/rectangles.length) - offset, height, Color.YELLOW);
             rec1.setStrokeWidth(2);
             rec1.setStroke(Color.BLACK);
-            rec1.relocate((i * rec1.getWidth()) + (i*offset), SCENE_HEIGHT/2 + 200);
+            rec1.relocate((i * rec1.getWidth()) + (i*offset) + rec1.getWidth(), SCENE_HEIGHT/2 + 200);
 
 
             rec1.getTransforms().add(new Rotate(180, rec1.getX(), rec1.getY()));
 
             rec1.setStrokeWidth(1);
             rec1.setStroke(Color.BLACK);
-
-            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(1000));
-            translateTransition.setByX(-rec1.getWidth());
-
-            FillTransition fillTransition = new FillTransition(Duration.millis(1000), Color.RED, Color.YELLOW);
-
-            ParallelTransition parallelTransition = new ParallelTransition(rec1, translateTransition, fillTransition);
-
-            rec1.setOnMouseClicked(event -> {
-                translateTransition.setByX(-1 * translateTransition.getByX());
-                parallelTransition.play();
-            });
 
 
 
