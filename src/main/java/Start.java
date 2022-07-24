@@ -93,7 +93,7 @@ public class Start extends Application {
         swapNodesBtn.setOnAction(event -> {
 
             Random rng = new Random();
-            int upperBound = nodes.length - 1;
+            int upperBound = nodes.length;
 
             // choose 2 random points, they should not be equal!
             boolean found = true;
@@ -111,14 +111,17 @@ public class Start extends Application {
             Rectangle rec1 = (Rectangle)nodes[i];
             Rectangle rec2 = (Rectangle)nodes[j];
 
+
+
             // move rec1 to rec2 and rec2 to the position of rec1
 
-            // only need 1 time, cause it is the same for every node (they are aligned on Y-Axis)
-            double y = rec1.getY();
+
 
             // Ist LayoutX nun der korrekte x-wert? Wir benötigen die x-Koordinaten des Nodes in der globalen Scene
-            double rec1_x = rec1.getLayoutX();
-            double rec2_x = rec2.getLayoutX();
+            final double rec1_x = rec1.getLayoutX();
+            final double rec2_x = rec2.getLayoutX();
+
+
 
 
             debugOutputText.setText(rec1_x + ", " + rec2_x);
@@ -160,6 +163,11 @@ public class Start extends Application {
                 translateRec2X = distanceX;
             }
 
+
+
+            System.out.println("Rectangle 1 = nodes[" + i + "]\tx - Value: " + rec1_x + "\t translate distance: " + translateRec1X);
+            System.out.println("Rectangle 2 = nodes[" + j + "]\tx - Value: " + rec2_x + "\t translate distance: " + translateRec2X);
+
             TranslateTransition tt = new TranslateTransition();
             tt.setByX(translateRec1X);
             tt.setNode(rec1);
@@ -174,8 +182,27 @@ public class Start extends Application {
 
 
             SequentialTransition sqt = new SequentialTransition(pt, pt2);
+            sqt.setOnFinished(event1 -> {
+
+
+
+
+                rec1.setLayoutX(rec1_x + rec1.getTranslateX());
+                rec2.setLayoutX(rec2_x + rec2.getTranslateX());
+                System.out.println("Rectangle 1 x - Value = " + rec1_x + "\t" + "Rectangle 1 translateX after Animation = " + rec1.getTranslateX());
+                System.out.println("Rectangle 2 x - Value = " + rec2_x + "\t" + "Rectangle 1 translateX after Animation = " + rec2.getTranslateX());
+
+                rec1.setTranslateX(0);
+                rec2.setTranslateX(0);
+
+                System.out.println(rec1.getLayoutX());
+                System.out.println(rec2.getLayoutX());
+
+
+            });
 
             sqt.play();
+
 
 
         });
