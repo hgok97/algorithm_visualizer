@@ -88,127 +88,20 @@ public class Start extends Application {
 
 
 
-        Button swapNodesBtn = new Button("swap random nodes");
+        Button sortButton = new Button("sortButton");
 
-        swapNodesBtn.setOnAction(event -> {
+        sortButton.setOnAction(event -> {
 
-            Random rng = new Random();
-            int upperBound = nodes.length;
-
-            // choose 2 random points, they should not be equal!
-            boolean found = true;
-            int i = rng.nextInt(upperBound);
-            int j;
-            // check if the next random value isnt equal, can be refactored obv.
-            do {
-                j = rng.nextInt(upperBound);
-                if (!(i == j)) {
-                    found = false;
-                }
-            } while (found);
-
-
-            Rectangle rec1 = (Rectangle)nodes[i];
-            Rectangle rec2 = (Rectangle)nodes[j];
-
-
-
-            // move rec1 to rec2 and rec2 to the position of rec1
-
-
-
-            // Ist LayoutX nun der korrekte x-wert? Wir benötigen die x-Koordinaten des Nodes in der globalen Scene
-            final double rec1_x = rec1.getLayoutX();
-            final double rec2_x = rec2.getLayoutX();
-
-
-
-
-            debugOutputText.setText(rec1_x + ", " + rec2_x);
-            int speed = 500;
-
-
-            // 1. color rec1 to visualize that is "choosen"
-            FillTransition ft = new FillTransition();
-            ft.setDuration(Duration.millis(speed));
-            ft.setFromValue(Color.YELLOW);
-            ft.setToValue(Color.RED);
-            ft.setShape(rec1);
-
-            // 2. Color rec2
-
-            FillTransition ft2 = new FillTransition();
-            ft2.setDuration(Duration.millis(speed));
-            ft2.setFromValue(Color.YELLOW);
-            ft2.setToValue(Color.RED);
-            ft2.setShape(rec2);
-
-
-            ParallelTransition pt = new ParallelTransition(ft, ft2);
-
-
-
-            // Abhaengig davon ob rec1 kleiner oder größer ist wird die Verschiebung gemacht
-
-            double translateRec1X = 0;
-            double translateRec2X = 0;
-
-            // bewege rec1 richtung rec2 (positiv)
-            double distanceX = Math.abs(rec1_x - rec2_x);
-            if (rec1_x < rec2_x) {
-                translateRec1X = distanceX;
-                translateRec2X = -1 * distanceX;
-            } else {
-                translateRec1X = -1 * distanceX;
-                translateRec2X = distanceX;
-            }
-
-
-
-            System.out.println("Rectangle 1 = nodes[" + i + "]\tx - Value: " + rec1_x + "\t translate distance: " + translateRec1X);
-            System.out.println("Rectangle 2 = nodes[" + j + "]\tx - Value: " + rec2_x + "\t translate distance: " + translateRec2X);
-
-            TranslateTransition tt = new TranslateTransition();
-            tt.setByX(translateRec1X);
-            tt.setNode(rec1);
-            tt.setDuration(Duration.millis(speed));
-
-            TranslateTransition tt2 = new TranslateTransition();
-            tt2.setByX(translateRec2X);
-            tt2.setNode(rec2);
-            tt2.setDuration(Duration.millis(speed));
-
-            ParallelTransition pt2 = new ParallelTransition(tt, tt2);
-
-
-            SequentialTransition sqt = new SequentialTransition(pt, pt2);
-            sqt.setOnFinished(event1 -> {
-
-
-
-
-                rec1.setLayoutX(rec1_x + rec1.getTranslateX());
-                rec2.setLayoutX(rec2_x + rec2.getTranslateX());
-                System.out.println("Rectangle 1 x - Value = " + rec1_x + "\t" + "Rectangle 1 translateX after Animation = " + rec1.getTranslateX());
-                System.out.println("Rectangle 2 x - Value = " + rec2_x + "\t" + "Rectangle 1 translateX after Animation = " + rec2.getTranslateX());
-
-                rec1.setTranslateX(0);
-                rec2.setTranslateX(0);
-
-                System.out.println(rec1.getLayoutX());
-                System.out.println(rec2.getLayoutX());
-
-
-            });
-
-            sqt.play();
+            BubbleSort sort = new BubbleSort();
+            sort.sort(nodes);
+            sort.play();
 
 
 
         });
 
         HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().addAll(colorFadeBtn, swapNodesBtn, debugOutputText);
+        buttonBox.getChildren().addAll(colorFadeBtn, sortButton, debugOutputText);
 
 
         root.getChildren().add(buttonBox);
@@ -216,11 +109,6 @@ public class Start extends Application {
         root.setOnMouseClicked(event -> {
             debugOutputText.setText("x = " + event.getX() + ", " + "y = " + event.getY());
         });
-
-
-
-        AnimationSort sort = new BubbleSort();
-        //sort.sort(nodes);
 
 
 
