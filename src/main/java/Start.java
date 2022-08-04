@@ -13,8 +13,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -34,6 +34,7 @@ public class Start extends Application {
 
     public static final int SCENE_HEIGHT = 720;
     public static final int SCENE_WIDTH = 1280;
+    public static final int STARTING_HEIGHT = SCENE_HEIGHT/2 + 200;
 
 
     private GraphicsContext graphicsContext;
@@ -41,13 +42,14 @@ public class Start extends Application {
     private Button controlButton2;
     private Button controlButton3;
 
+
     // zu prototyp zwecken schmeißen wir erstmals alles in die main/start klasse
 
     @Override
     public void start(Stage primaryStage) {
 
 
-         BorderPane root = new BorderPane();
+        BorderPane root = new BorderPane();
 
         Canvas canvas = initCanvas();
         VBox controlBox = createControlBox();
@@ -58,12 +60,36 @@ public class Start extends Application {
 
 
 
+        controlButton1.setOnAction(event -> {
+            Rectangle[] rectangles = generateRandomRectangles(20);
+            drawRectangles(rectangles);
+        });
+
+
+
+
 
         Scene scene = new Scene(root);
 
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setResizable(false);
+        //primaryStage.setResizable(false);
+
+    }
+
+    private void drawRectangle(Rectangle rectangle) {
+        graphicsContext.setFill(Color.YELLOWGREEN);
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setLineWidth(2);
+
+        graphicsContext.beginPath();
+        graphicsContext.moveTo(rectangle.getX(), rectangle.getY());
+        graphicsContext.lineTo(rectangle.getX() + rectangle.getWidth(), rectangle.getY());
+        graphicsContext.lineTo(rectangle.getX() + rectangle.getWidth(), rectangle.getY() - rectangle.getHeight());
+        graphicsContext.lineTo(rectangle.getX(), rectangle.getY() - rectangle.getHeight());
+        graphicsContext.lineTo(rectangle.getX(), rectangle.getY());
+        graphicsContext.fill();
+        graphicsContext.stroke();
 
     }
 
@@ -72,7 +98,7 @@ public class Start extends Application {
 
 
         VBox box = new VBox();
-        controlButton1 = new Button("btn1");
+        controlButton1 = new Button("generate rectangles");
         controlButton2 = new Button("btn2");
         controlButton3 = new Button("btn3");
         box.getChildren().addAll(controlButton1, controlButton2, controlButton3);
@@ -85,20 +111,73 @@ public class Start extends Application {
     private Canvas initCanvas() {
 
         Canvas canvas = new Canvas(SCENE_WIDTH, SCENE_HEIGHT);
-
         graphicsContext = canvas.getGraphicsContext2D();
-        graphicsContext.setFill(Color.GRAY);
-        graphicsContext.fillRect(0, 0, SCENE_WIDTH, SCENE_HEIGHT);
+
+        drawDefault();
+
 
         return canvas;
     }
 
+    private void drawDefault() {
+        graphicsContext.setFill(Color.GRAY);
+        graphicsContext.fillRect(0, 0, SCENE_WIDTH, SCENE_HEIGHT);
+        drawLine(0, STARTING_HEIGHT, SCENE_WIDTH-1, STARTING_HEIGHT);
+
+    }
+
     private void drawLine(double startX, double startY, double endX, double endY) {
         graphicsContext.setFill(Color.WHITESMOKE);
-
         graphicsContext.setStroke(Color.WHITESMOKE);
-        graphicsContext.moveTo(startX, startY);
-        graphicsContext.lineTo(endX, endY);
+        graphicsContext.setLineWidth(5);
+        graphicsContext.strokeLine(startX, startY, endX, endY);
+
+    }
+
+    private Rectangle[] generateRandomRectangles(int num_of_objects) {
+        Random rng = new Random();
+        double maxHeight = SCENE_HEIGHT - 300;
+        int offset = 7;
+        int width = SCENE_WIDTH / num_of_objects - (offset);
+
+
+        Rectangle[] rectangles = new Rectangle[num_of_objects];
+
+        for (int i = 0; i < num_of_objects; i++) {
+
+            double height = rng.nextInt((int)maxHeight) + 100;
+            double x = (i * width) + (offset*i);
+            double y = STARTING_HEIGHT;
+            Rectangle rectangle = new Rectangle(width, height, x, y);
+            rectangles[i] = rectangle;
+
+        }
+
+
+        return rectangles;
+
+    }
+
+    private void drawRectangles(Rectangle[] rectangles) {
+
+
+        drawDefault();
+        graphicsContext.setFill(Color.YELLOWGREEN);
+        graphicsContext.setStroke(Color.BLACK);
+
+        for (int i = 0; i < rectangles.length; i++) {
+
+
+            Rectangle rec = rectangles[i];
+
+            drawRectangle(rec);
+
+
+        }
+
+
+
+
 
     }
 
