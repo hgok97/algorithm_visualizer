@@ -11,7 +11,7 @@ public abstract class AnimationSort {
 
     private ArrayList<Animation> sortingAnimation;
 
-    public final int speed = 1000;
+    public final int speed = 200;
 
 
     public AnimationSort() {

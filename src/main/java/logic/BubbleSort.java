@@ -9,10 +9,26 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class BubbleSort extends AnimationSort {
 
+
+    private HashMap<Rectangle, Double> rectangleDoubleMap = new HashMap<>();
+
+
+
+
+    public void initMap(Node[] nodes) {
+
+
+        for (int i = 0; i < nodes.length; i++) {
+            Rectangle rec = (Rectangle)nodes[i];
+            rectangleDoubleMap.put(rec, rec.getLayoutX());
+        }
+
+    }
 
 
     /**
@@ -21,6 +37,9 @@ public class BubbleSort extends AnimationSort {
      */
     @Override
     public void sort(Node[] nodes) {
+
+        initMap(nodes);
+
 
 
 
@@ -68,6 +87,8 @@ public class BubbleSort extends AnimationSort {
         nodes[i] = nodes[j];
         nodes[j] = temp;
 
+
+
     }
 
 
@@ -100,14 +121,22 @@ public class BubbleSort extends AnimationSort {
 
     }
 
+
+    private double getX(Rectangle rec) {
+        return rectangleDoubleMap.get(rec);
+    }
+    private void setX(Rectangle r, double x) {
+        rectangleDoubleMap.put(r, x);
+    }
+
     private void createSwapAnimation(Node node1, Node node2) {
 
         Rectangle rec1 = (Rectangle)node1;
         Rectangle rec2 = (Rectangle)node2;
 
 
-        double rec1_x = rec1.getLayoutX();
-        double rec2_x = rec2.getLayoutX();
+        double rec1_x = getX(rec1);
+        double rec2_x = getX(rec2);
 
         // wir wissen, falls geswappt wird das rec1 in richtung rec2 geht und rec2 in richtung rec1 !
 
@@ -125,7 +154,8 @@ public class BubbleSort extends AnimationSort {
 
         ParallelTransition pt2 = new ParallelTransition(tt, tt2);
 
-
+        setX(rec1, rec1_x+translateDistanceX);
+        setX(rec2, rec2_x-translateDistanceX);
 
         pt2.setOnFinished(event -> {
 
