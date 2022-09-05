@@ -1,30 +1,34 @@
 import javafx.animation.*;
 import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import logic.AnimationSort;
 import logic.BubbleSort;
-import org.w3c.dom.css.Rect;
+
 
 import java.util.Random;
 
 public class Start extends Application {
+
+
+    private HBox bottomControls;
+    private VBox sideControl;
+    private Pane animationPane;
+
+    private Button animationStartBtn;
+    private Button shuffleArrayBtn;
+
+
 
     public static void main(String[] args) {
         launch(args);
@@ -34,152 +38,166 @@ public class Start extends Application {
 
     public static final int SCENE_HEIGHT = 720;
     public static final int SCENE_WIDTH = 1280;
-    public static final int STARTING_HEIGHT = SCENE_HEIGHT/2 + 200;
-
-
-    private GraphicsContext graphicsContext;
-    private Button controlButton1;
-    private Button controlButton2;
-    private Button controlButton3;
-
-
     // zu prototyp zwecken schmeißen wir erstmals alles in die main/start klasse
 
     @Override
     public void start(Stage primaryStage) {
 
 
-        BorderPane root = new BorderPane();
+        /*
+        BorderPane root = new Window();
+        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
-        Canvas canvas = initCanvas();
-        VBox controlBox = createControlBox();
-        controlBox.setAlignment(Pos.CENTER);
-        root.setCenter(canvas);
-        root.setRight(controlBox);
+         */
 
 
+        BorderPane root = createScene();
 
 
-        controlButton1.setOnAction(event -> {
-            Rectangle[] rectangles = generateRandomRectangles(20);
-            drawRectangles(rectangles);
+        // Create Rectangles/Nodes with Random Values x Position of the Rectangle can be seen as index of Array
+        // y - Position or Height is the Value at the given Array Position
+        Node[] nodes = createRandomNodes(50, SCENE_HEIGHT);
+
+        root.getChildren().addAll(nodes);
+
+
+
+
+
+
+
+
+
+
+        Button sortButton = new Button("sortButton");
+
+        sortButton.setOnAction(event -> {
+
+            BubbleSort sort = new BubbleSort();
+            sort.sort(nodes);
+            sort.play();
+
+
+
         });
 
+        HBox buttonBox = new HBox(10);
+        buttonBox.getChildren().addAll(sortButton);
+
+
+        root.getChildren().add(buttonBox);
 
 
 
 
-        Scene scene = new Scene(root);
+
+
+        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
         primaryStage.setScene(scene);
         primaryStage.show();
-        //primaryStage.setResizable(false);
 
     }
 
-    private void drawRectangle(Rectangle rectangle) {
-        graphicsContext.setFill(Color.YELLOWGREEN);
-        graphicsContext.setStroke(Color.BLACK);
-        graphicsContext.setLineWidth(2);
+    private BorderPane createScene() {
 
-        graphicsContext.beginPath();
-        graphicsContext.moveTo(rectangle.getX(), rectangle.getY());
-        graphicsContext.lineTo(rectangle.getX() + rectangle.getWidth(), rectangle.getY());
-        graphicsContext.lineTo(rectangle.getX() + rectangle.getWidth(), rectangle.getY() - rectangle.getHeight());
-        graphicsContext.lineTo(rectangle.getX(), rectangle.getY() - rectangle.getHeight());
-        graphicsContext.lineTo(rectangle.getX(), rectangle.getY());
-        graphicsContext.fill();
-        graphicsContext.stroke();
+        // initiating the GUI Parts
+        createAnimationPane();
+        createSideControls();
+        createBottomControls();
 
+        // Glue the GUI Parts together in a BorderPane
+        BorderPane root = new BorderPane();
+        root.setCenter(animationPane);
+        root.setBottom(bottomControls);
+        //root.setRight(sideControl);
+
+        return root;
     }
 
+    private void createBottomControls() {
 
-    private VBox createControlBox() {
+        this.bottomControls = new HBox(10);
+        this.animationStartBtn = new Button("sort");
+        this.shuffleArrayBtn = new Button("shuffle");
 
 
-        VBox box = new VBox();
-        controlButton1 = new Button("generate rectangles");
-        controlButton2 = new Button("btn2");
-        controlButton3 = new Button("btn3");
-        box.getChildren().addAll(controlButton1, controlButton2, controlButton3);
+        this.bottomControls.getChildren().addAll(animationStartBtn, shuffleArrayBtn);
 
-        return box;
 
 
     }
 
-    private Canvas initCanvas() {
-
-        Canvas canvas = new Canvas(SCENE_WIDTH, SCENE_HEIGHT);
-        graphicsContext = canvas.getGraphicsContext2D();
-
-        drawDefault();
-
-
-        return canvas;
-    }
-
-    private void drawDefault() {
-        graphicsContext.setFill(Color.GRAY);
-        graphicsContext.fillRect(0, 0, SCENE_WIDTH, SCENE_HEIGHT);
-        drawLine(0, STARTING_HEIGHT, SCENE_WIDTH-1, STARTING_HEIGHT);
+    private void createSideControls() {
 
     }
 
-    private void drawLine(double startX, double startY, double endX, double endY) {
-        graphicsContext.setFill(Color.WHITESMOKE);
-        graphicsContext.setStroke(Color.WHITESMOKE);
-        graphicsContext.setLineWidth(5);
-        graphicsContext.strokeLine(startX, startY, endX, endY);
+
+    private void createAnimationPane() {
+        this.animationPane = new Pane();
+        Line line = new Line();
+        line.setStartX(0);
+        line.setStartY(SCENE_HEIGHT/2 + 200);
+        line.setEndX(SCENE_WIDTH);
+        line.setEndY(SCENE_HEIGHT/2 + 200);
+        line.setStroke(Color.BLACK);
+        line.setStrokeWidth(5);
+        this.animationPane.getChildren().add(line);
 
     }
 
-    private Rectangle[] generateRandomRectangles(int num_of_objects) {
-        Random rng = new Random();
-        double maxHeight = SCENE_HEIGHT - 300;
-        int offset = 7;
-        int width = SCENE_WIDTH / num_of_objects - (offset);
 
+    /**
+     * kp warum kein terminal output da ist, man könnte auch in eine datei schreiben oder eine extra window parallel
+     * bzw. in ein scrollable text reinschreiben ^^
+     * @param nodes
+     */
+    private void printNodePosition(Node[] nodes) {
 
-        Rectangle[] rectangles = new Rectangle[num_of_objects];
-
-        for (int i = 0; i < num_of_objects; i++) {
-
-            double height = rng.nextInt((int)maxHeight) + 100;
-            double x = (i * width) + (offset*i);
-            double y = STARTING_HEIGHT;
-            Rectangle rectangle = new Rectangle(width, height, x, y);
-            rectangles[i] = rectangle;
-
+        for (Node node: nodes) {
+            System.out.println(node.getLayoutX() + ", " + node.getTranslateX() + ", " + node.getLocalToSceneTransform());
         }
 
+
+    }
+
+    private Node[] createRandomNodes(int num_of_nodes, int max_height_of_node) {
+
+        Random rng = new Random();
+        Rectangle[] rectangles = new Rectangle[num_of_nodes];
+
+
+        int width = SCENE_WIDTH / num_of_nodes;
+
+
+        for (int i = 0; i < num_of_nodes; i++) {
+
+            int height = rng.nextInt(max_height_of_node/2) + 20;
+
+            int offset = 5;
+            Rectangle rec1 = new Rectangle((SCENE_WIDTH/rectangles.length) - offset, height, AnimationSort.COLOR_DEFAULT);
+            rec1.setStrokeWidth(2);
+            rec1.setStroke(Color.BLACK);
+            rec1.relocate((i * rec1.getWidth()) + (i*offset) + rec1.getWidth(), SCENE_HEIGHT/2 + 200);
+
+
+            rec1.getTransforms().add(new Rotate(180, rec1.getX(), rec1.getY()));
+
+            rec1.setStrokeWidth(1);
+            rec1.setStroke(Color.BLACK);
+
+
+
+            rectangles[i] = rec1;
+
+        }
 
         return rectangles;
-
     }
 
-    private void drawRectangles(Rectangle[] rectangles) {
-
-
-        drawDefault();
-        graphicsContext.setFill(Color.YELLOWGREEN);
-        graphicsContext.setStroke(Color.BLACK);
-
-        for (int i = 0; i < rectangles.length; i++) {
-
-
-            Rectangle rec = rectangles[i];
-
-            drawRectangle(rec);
-
-
-        }
 
 
 
-
-
-    }
 
 
 }

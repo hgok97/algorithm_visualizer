@@ -19,7 +19,7 @@ public class BubbleSort extends AnimationSort {
 
 
 
-
+    @Override
     public void initMap(Node[] nodes) {
 
 
@@ -65,6 +65,9 @@ public class BubbleSort extends AnimationSort {
                 }
 
             }
+
+
+
             // vorzeitiges abbruchkriterium, falls in einem Durchlauf kein swap vorhanden war
             if (!changed) {
                 return;
@@ -92,6 +95,17 @@ public class BubbleSort extends AnimationSort {
     }
 
 
+    public void createFillSortedAnimation(Node node1) {
+
+        Rectangle rec = (Rectangle) node1;
+        FillTransition ft = new FillTransition();
+        ft.setDuration(Duration.millis(speed));
+        ft.setFromValue(COLOR_DEFAULT);
+        ft.setToValue(COLOR_SORTED);
+        ft.setShape(rec);
+        addAnimation(ft);
+
+    }
     private void createSelectAnimation(Node node1, Node node2) {
 
 
@@ -99,11 +113,11 @@ public class BubbleSort extends AnimationSort {
         Rectangle rec1 = (Rectangle)node1;
         FillTransition ft = new FillTransition();
         ft.setDuration(Duration.millis(speed));
-        ft.setFromValue(Color.YELLOW);
-        ft.setToValue(Color.ALICEBLUE);
+        ft.setFromValue(COLOR_DEFAULT);
+        ft.setToValue(COLOR_SELECTED);
         ft.setShape(rec1);
         ft.setOnFinished(event -> {
-            rec1.setFill(Color.YELLOW);
+            rec1.setFill(COLOR_DEFAULT);
         });
 
         Rectangle rec2 = (Rectangle)node2;
