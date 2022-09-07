@@ -16,7 +16,7 @@ public abstract class AnimationSort {
     public static final Color COLOR_SELECTED = Color.DARKGOLDENROD;
     public static final Color COLOR_DEFAULT = Color.YELLOW;
     public static final Color COLOR_SORTED  = Color.LIGHTGREEN;
-    public static final int speed = 3;
+    public static final int speed = 5;
 
     private ArrayList<Animation> sortingAnimation;
     private HashMap<Shape, Double> shapeToXcoordinate;

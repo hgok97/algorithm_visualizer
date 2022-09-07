@@ -12,33 +12,25 @@ import javafx.scene.layout.VBox;
 public class Window extends BorderPane {
 
 
+    public static final int SCENE_HEIGHT = 720;
+    public static final int SCENE_WIDTH = 1280;
+
     private HBox bottomControls;
-    private VBox sideControls;
 
     // This Pane will be filled with Elements which depend on the current Algorithm which is going to be visualized
     private Pane visualizerPane;
 
 
-    public Window() {
-        createWindow();
-    }
-
-
-    private void createWindow() {
-
-        HBox bottomControls = new BottomControls();
-        VBox sideControls = new SideControls();
-
-        visualizerPane = new Pane();
-        visualizerPane.setPrefWidth(400);
-        visualizerPane.setPrefHeight(400);
+    public Window(Pane pane, HBox hbox) {
+        this.visualizerPane = pane;
+        this.bottomControls = hbox;
 
         this.setBottom(bottomControls);
-        this.setRight(sideControls);
         this.setCenter(visualizerPane);
-
-
     }
+
+
+
 
 
 
@@ -50,13 +42,6 @@ public class Window extends BorderPane {
         this.bottomControls = bottomControls;
     }
 
-    public VBox getSideControls() {
-        return sideControls;
-    }
-
-    public void setSideControls(VBox sideControls) {
-        this.sideControls = sideControls;
-    }
 
     public Pane getVisualizerPane() {
         return visualizerPane;

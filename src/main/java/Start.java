@@ -1,5 +1,7 @@
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,6 +31,9 @@ public class Start extends Application {
     private Button shuffleArrayBtn;
 
 
+    private Node[] nodes;
+
+
 
     public static void main(String[] args) {
         launch(args);
@@ -50,42 +55,35 @@ public class Start extends Application {
 
          */
 
+        this.nodes = createRandomNodes(50, SCENE_HEIGHT);
+
 
         BorderPane root = createScene();
 
 
-        // Create Rectangles/Nodes with Random Values x Position of the Rectangle can be seen as index of Array
-        // y - Position or Height is the Value at the given Array Position
-        Node[] nodes = createRandomNodes(50, SCENE_HEIGHT);
-
-        root.getChildren().addAll(nodes);
 
 
-
-
-
-
-
-
-
-
-        Button sortButton = new Button("sortButton");
-
-        sortButton.setOnAction(event -> {
-
+        animationStartBtn.setOnAction(event -> {
             BubbleSort sort = new BubbleSort();
             sort.sort(nodes);
             sort.play();
+        });
 
-
+        shuffleArrayBtn.setOnAction(event -> {
+            animationPane.getChildren().clear();
+            this.nodes = createRandomNodes(50, SCENE_HEIGHT);
+            addLineToScene();
+            animationPane.getChildren().addAll(nodes);
 
         });
 
-        HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().addAll(sortButton);
+
+        // Create Rectangles/Nodes with Random Values x Position of the Rectangle can be seen as index of Array
+        // y - Position or Height is the Value at the given Array Position
 
 
-        root.getChildren().add(buttonBox);
+
+
 
 
 
@@ -95,6 +93,7 @@ public class Start extends Application {
         Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
     }
@@ -123,6 +122,11 @@ public class Start extends Application {
 
 
         this.bottomControls.getChildren().addAll(animationStartBtn, shuffleArrayBtn);
+        this.bottomControls.setAlignment(Pos.TOP_CENTER);
+        CornerRadii cornerRadii = new CornerRadii(5);
+        Insets insets = new Insets(5, 5, 5,5 );
+        Background background = new Background(new BackgroundFill(Color.GRAY, cornerRadii, insets));
+        this.bottomControls.setBackground(background);
 
 
 
@@ -135,6 +139,12 @@ public class Start extends Application {
 
     private void createAnimationPane() {
         this.animationPane = new Pane();
+        addLineToScene();
+        this.animationPane.getChildren().addAll(nodes);
+
+    }
+
+    private void addLineToScene() {
         Line line = new Line();
         line.setStartX(0);
         line.setStartY(SCENE_HEIGHT/2 + 200);
@@ -160,6 +170,7 @@ public class Start extends Application {
 
 
     }
+
 
     private Node[] createRandomNodes(int num_of_nodes, int max_height_of_node) {
 
