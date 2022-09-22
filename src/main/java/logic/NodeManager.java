@@ -19,6 +19,10 @@ public class NodeManager {
 
     public NodeManager(int numOfNodes) {
         this.nodes = new Node[numOfNodes];
+
+        for (int i = 0; i < numOfNodes; i++) {
+            this.nodes[i] = new Rectangle(10, 140, Color.YELLOW);
+        }
     }
 
     public Node[] getNodes() {

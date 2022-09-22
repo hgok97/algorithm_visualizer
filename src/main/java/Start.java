@@ -1,3 +1,6 @@
+import gui.AlgorithmVisualizerPane;
+import gui.BottomControls;
+import gui.Window;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -16,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import logic.AnimationSort;
 import logic.BubbleSort;
+import logic.NodeManager;
 
 
 import java.util.Random;
@@ -47,6 +51,9 @@ public class Start extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+
+
 
 
         /*
